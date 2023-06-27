@@ -16,8 +16,8 @@ const app = {};
 
 // testing file system
 // @TODO: pore muche dibo
-data.create('test', 'newfile', { name: 'javascript', project: 'api' }, (err) => {
-  console.log(`err was : ${err}`);
+data.update('test', 'newfile', { name: 'Rahim Ali', Language: "English" }, (err) => {
+  console.log(`${err}`);
 });
 
 // Create Server
