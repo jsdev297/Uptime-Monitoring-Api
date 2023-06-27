@@ -16,7 +16,7 @@ const app = {};
 
 // testing file system
 // @TODO: pore muche dibo
-data.update('test', 'newfile', { name: 'Rahim Ali', Language: "English" }, (err) => {
+data.delete('test', 'newfile', (err) => {
   console.log(`${err}`);
 });
 
