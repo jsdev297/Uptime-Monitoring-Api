@@ -9,9 +9,16 @@
 const http = require("http");
 const { handleReqRes } = require("./Helpers/HandleReqRes");
 const environment = require("./Helpers/Environments");
-console.log(environment);
+const data = require("./lib/data");
+
 // Module Scaffolding
 const app = {};
+
+// testing file system
+// @TODO: pore muche dibo
+data.create('test', 'newfile', { name: 'javascript', project: 'api' }, (err) => {
+  console.log(`err was : ${err}`);
+});
 
 // Create Server
 app.createServer = () => {
