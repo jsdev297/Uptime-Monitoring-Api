@@ -14,12 +14,6 @@ const data = require("./lib/data");
 // Module Scaffolding
 const app = {};
 
-// testing file system
-// @TODO: pore muche dibo
-data.delete('test', 'newfile', (err) => {
-  console.log(`${err}`);
-});
-
 // Create Server
 app.createServer = () => {
   const server = http.createServer(app.handleReqRes);

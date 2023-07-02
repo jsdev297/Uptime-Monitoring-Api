@@ -9,8 +9,7 @@ const notFoundHandler = {}
 
 // Handler
 notFoundHandler.handle = (requestProperties, callback) => {
-    console.log(requestProperties);
-    callback(202, {});
+  callback(202, {});
 }
 
 module.exports = notFoundHandler;

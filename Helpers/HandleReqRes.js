@@ -39,15 +39,12 @@ handler.handleReqRes = (req, res) => {
     handle(requestProperties, (statusCode, payload) => {
       statusCode = typeof statusCode === 'number' ? statusCode : 500;
       payload = typeof payload === 'object' ? payload : {};
-
       const payloadString = JSON.stringify(payload);
-      res.write(payloadString);
+      res.setHeader("Content-Type", "application/json");
       res.writeHead(statusCode);
-
+      res.end(payloadString);
     });
   });
-
-  res.end();
 
 }
 

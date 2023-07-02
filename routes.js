@@ -9,8 +9,8 @@ const simpleHandler = require("./RouteHandler/SimpleHandler");
 const notFoundHandler = require("./RouteHandler/NotFoundHandler")
 
 const routes = {
-    simple: simpleHandler,
-    notFound: notFoundHandler
+  simple: simpleHandler,
+  notFound: notFoundHandler
 }
 
 module.exports = routes;

@@ -9,7 +9,6 @@ const simpleHandler = {}
 
 // handler
 simpleHandler.handle = (requestProperties, callback) => {
-  // console.log(requestProperties);
   callback(202, { email: 'fatinishraqprapya', name: 'Fatin Ishraq Prapya' });
 }
 
