@@ -9,6 +9,7 @@ const url = require("url");
 const { StringDecoder } = require("string_decoder");
 const routes = require("../routes");
 const notFoundHandler = require("../RouteHandler/NotFoundHandler");
+const { parseJSON } = require("./Utilities");
 
 // Module Scaffolding
 const handler = {}
@@ -34,7 +35,8 @@ handler.handleReqRes = (req, res) => {
   });
 
   req.on("end", (buffer) => {
-    realData += Decoder.end();
+    realData += Decoder.end(buffer);
+    requestProperties.body = parseJSON(realData);
 
     handle(requestProperties, (statusCode, payload) => {
       statusCode = typeof statusCode === 'number' ? statusCode : 500;

@@ -6,11 +6,11 @@
 
 // Dependies
 const simpleHandler = require("./RouteHandler/SimpleHandler");
-const notFoundHandler = require("./RouteHandler/NotFoundHandler")
+const userHandler = require("./RouteHandler/UserHandler");
 
 const routes = {
   simple: simpleHandler,
-  notFound: notFoundHandler
+  user: userHandler
 }
 
 module.exports = routes;
