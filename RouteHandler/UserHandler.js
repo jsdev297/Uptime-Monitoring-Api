@@ -56,12 +56,28 @@ userHandler._users.post = (requestProperties, callback) => {
       }
     });
   } else {
-
     callback(400, {
       callback: "you have a problem in your request"
     })
   }
 
+}
+
+userHandler._users.get = (requestProperties, callback) => {
+  const phone = typeof (requestProperties.queryObject.phone) === "string" && requestProperties.queryObject.phone.trim().length === 11 ? requestProperties.queryObject.phone : false;
+  if (phone) {
+    data.read("users", phone, (err, user) => {
+      if (!err) {
+        const userCu = JSON.parse(user);
+        delete userCu["password"];
+        callback(200, userCu);
+      } else {
+        callback(500, { message: "Error Established in Database" });
+      }
+    });
+  } else {
+    callback(404, { message: "request user is not defined" });
+  }
 }
 
 module.exports = userHandler;
