@@ -6,7 +6,7 @@
 
 // Dependencies
 const data = require("../lib/data");
-const { hash } = require("../Helpers/Utilities");
+const { hash, parseJSON } = require("../Helpers/Utilities");
 
 // Module Scaffolding
 const userHandler = {}
@@ -24,6 +24,7 @@ userHandler.handle = (requestProperties, callback) => {
 
 userHandler._users = {};
 
+// User Creating System
 userHandler._users.post = (requestProperties, callback) => {
   const firstName = typeof (requestProperties.body.firstName) === "string" && requestProperties.body.firstName.trim().length > 0 ? requestProperties.body.firstName : false;
   const lastName = typeof (requestProperties.body.lastName) === "string" && requestProperties.body.lastName.trim().length > 0 ? requestProperties.body.lastName : false;
@@ -63,6 +64,7 @@ userHandler._users.post = (requestProperties, callback) => {
 
 }
 
+// User Details Getting Method
 userHandler._users.get = (requestProperties, callback) => {
   const phone = typeof (requestProperties.queryObject.phone) === "string" && requestProperties.queryObject.phone.trim().length === 11 ? requestProperties.queryObject.phone : false;
   if (phone) {
@@ -77,6 +79,89 @@ userHandler._users.get = (requestProperties, callback) => {
     });
   } else {
     callback(404, { message: "request user is not defined" });
+  }
+}
+
+// User Update Method
+userHandler._users.put = (requestProperties, callback) => {
+  const phone = typeof (requestProperties.body.phone) === "string" && requestProperties.body.phone.trim().length === 11 ? requestProperties.body.phone : false;
+  const firstName = typeof (requestProperties.body.firstName) === "string" && requestProperties.body.firstName.trim().length > 0 ? requestProperties.body.firstName : false;
+  const lastName = typeof (requestProperties.body.lastName) === "string" && requestProperties.body.lastName.trim().length > 0 ? requestProperties.body.lastName : false;
+  const password = typeof (requestProperties.body.password) === "string" && requestProperties.body.password.trim().length > 0 ? requestProperties.body.password : false;
+
+  if (phone) {
+    if (firstName || lastName || password) {
+      data.read("users", phone, (err, user) => {
+        if (!err && user) {
+          user = parseJSON(user);
+          if (firstName) {
+            user.firstName = firstName;
+          }
+          if (lastName) {
+            user.lastName = lastName;
+          }
+          if (password) {
+            user.password = hash(password);
+          }
+          data.update("users", phone, user, (err) => {
+            if (!err) {
+              callback(200, {
+                message: "User Was Updated Successfully"
+              })
+            } else {
+              callback(500, {
+                error: "There was  a problem"
+              })
+            }
+          })
+        } else {
+          callback(400, {
+            error: "Problem in file reading"
+          });
+        }
+      });
+    } else {
+      callback(400, {
+        error: "You have problem in your request"
+      })
+    }
+  } else {
+    callback(400, {
+      error: "Invalid Phone Number!"
+    });
+  }
+}
+
+
+
+// User Delete Method
+userHandler._users.delete = (requestProperties, callback) => {
+  const phone = typeof (requestProperties.queryObject.phone) === "string" && requestProperties.queryObject.phone.trim().length === 11 ? requestProperties.queryObject.phone : false;
+  console.log(typeof (requestProperties.queryObject.phone), requestProperties.queryObject.phone);
+  if (phone) {
+    data.read("users", phone, (err, userData) => {
+      if (!err && userData) {
+        data.delete("users", phone, (err) => {
+          if (!err) {
+            callback(200, {
+              message: "User Deleted Successfully"
+            });
+          } else {
+            callback(500, {
+              error: "file deletion failed"
+            });
+          }
+        })
+      } else {
+        callback(400, {
+          error: "User not Found!"
+        })
+      }
+    })
+  } else {
+    callback(500, {
+      message: "Wrong Input"
+    });
   }
 }
 
