@@ -36,4 +36,9 @@ utilities.hash = (string) => {
     }
 }
 
+// Hash String
+utilities.createRandomText = (strLen) => {
+    return "dflsdjfljsdf";
+}
+
 module.exports = utilities;

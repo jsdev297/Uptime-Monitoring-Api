@@ -64,7 +64,7 @@ userHandler._users.post = (requestProperties, callback) => {
 
 }
 
-// User Details Getting Method
+// !TODO: User Details Getting Method (Authentication needed)
 userHandler._users.get = (requestProperties, callback) => {
   const phone = typeof (requestProperties.queryObject.phone) === "string" && requestProperties.queryObject.phone.trim().length === 11 ? requestProperties.queryObject.phone : false;
   if (phone) {
@@ -82,7 +82,7 @@ userHandler._users.get = (requestProperties, callback) => {
   }
 }
 
-// User Update Method
+// !TODO: User Update Method (Authentication needed)
 userHandler._users.put = (requestProperties, callback) => {
   const phone = typeof (requestProperties.body.phone) === "string" && requestProperties.body.phone.trim().length === 11 ? requestProperties.body.phone : false;
   const firstName = typeof (requestProperties.body.firstName) === "string" && requestProperties.body.firstName.trim().length > 0 ? requestProperties.body.firstName : false;
@@ -132,9 +132,7 @@ userHandler._users.put = (requestProperties, callback) => {
   }
 }
 
-
-
-// User Delete Method
+// !TODO: User Delete Method (Authentication needed)
 userHandler._users.delete = (requestProperties, callback) => {
   const phone = typeof (requestProperties.queryObject.phone) === "string" && requestProperties.queryObject.phone.trim().length === 11 ? requestProperties.queryObject.phone : false;
   console.log(typeof (requestProperties.queryObject.phone), requestProperties.queryObject.phone);

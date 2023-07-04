@@ -5,11 +5,11 @@
 */
 
 // Dependies
-const simpleHandler = require("./RouteHandler/SimpleHandler");
 const userHandler = require("./RouteHandler/UserHandler");
+const tokenHandler = require("./RouteHandler/TokenHandler");
 
 const routes = {
-  simple: simpleHandler,
+  token: tokenHandler,
   user: userHandler
 }
 
