@@ -36,7 +36,7 @@ tokenHandler._token.post = (requestProperties, callback) => {
                 userData = parseJSON(userData)
                 if (userData.password === hashedPassword) {
                     console.log("password matched");
-                    const tokenId = createRandomText();
+                    const tokenId = createRandomText(10);
                     const expires = Date.now() + (60 * 60 * 1000);
                     const tokenObject = { phone, id: tokenId, expires }
 
@@ -56,10 +56,14 @@ tokenHandler._token.post = (requestProperties, callback) => {
                 }
             } else {
                 callback(400, {
-                    message: "Invalid Phone Number"
+                    message: "Your Number is not ragistered!"
                 });
             }
         });
+    } else {
+        callback(400, {
+            message: "Invalid Number"
+        })
     }
 }
 
