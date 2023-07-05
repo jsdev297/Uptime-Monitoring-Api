@@ -43,7 +43,7 @@ utilities.createRandomText = (strLen) => {
     if (length) {
         const possibleCharacters = "abcdefghijklmnopqrstuvwxyz1234567890";
         let output = "";
-        for (let i = 1; i < length; i++) {
+        for (let i = 1; i <= length; i++) {
             const randomCharacter = possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
             output += randomCharacter;
         }

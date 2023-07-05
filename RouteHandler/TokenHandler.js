@@ -35,8 +35,7 @@ tokenHandler._token.post = (requestProperties, callback) => {
                 const hashedPassword = hash(password);
                 userData = parseJSON(userData)
                 if (userData.password === hashedPassword) {
-                    console.log("password matched");
-                    const tokenId = createRandomText(10);
+                    const tokenId = createRandomText(20);
                     const expires = Date.now() + (60 * 60 * 1000);
                     const tokenObject = { phone, id: tokenId, expires }
 
@@ -68,7 +67,19 @@ tokenHandler._token.post = (requestProperties, callback) => {
 }
 
 tokenHandler._token.get = (requestProperties, callback) => {
-
+    const id = typeof (requestProperties.queryObject.id) === "string" && requestProperties.queryObject.id.trim().length === 20 ? requestProperties.queryObject.id : false;
+    if (id) {
+        data.read("Tokens", id, (err, tokenData) => {
+            if (!err) {
+                const token = parseJSON(tokenData);
+                callback(200, token);
+            } else {
+                callback(500, { message: "Request Token was not found" });
+            }
+        });
+    } else {
+        callback(404, { message: "Wrong Id" });
+    }
 }
 
 tokenHandler._token.put = (requestProperties, callback) => {
