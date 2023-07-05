@@ -145,4 +145,17 @@ tokenHandler._token.delete = (requestProperties, callback) => {
     }
 }
 
+
+tokenHandler._token.varifyToken = (id, phone, callback) => {
+    data.read("Tokens", id, (err, tokenData) => {
+        if (!err && callback) {
+            if (parseJSON(tokenData).phone === phone) {
+                callback(true);
+            }
+        } else {
+            callback(false);
+        }
+    });
+}
+
 module.exports = tokenHandler;
