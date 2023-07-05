@@ -116,7 +116,33 @@ tokenHandler._token.put = (requestProperties, callback) => {
 }
 
 tokenHandler._token.delete = (requestProperties, callback) => {
+    const id = typeof (requestProperties.queryObject.id) === "string" && requestProperties.queryObject.id.trim().length === 20 ? requestProperties.queryObject.id : false;
 
+    if (id) {
+        data.read("Tokens", id, (err, tokenData) => {
+            if (!err && tokenData) {
+                data.delete("Tokens", id, (err) => {
+                    if (!err) {
+                        callback(200, {
+                            message: "Token Deleted Successfully"
+                        });
+                    } else {
+                        callback(500, {
+                            error: "Token deletion failed"
+                        });
+                    }
+                })
+            } else {
+                callback(400, {
+                    error: "Token not Found!"
+                })
+            }
+        })
+    } else {
+        callback(500, {
+            message: "Wrong Input"
+        });
+    }
 }
 
 module.exports = tokenHandler;
