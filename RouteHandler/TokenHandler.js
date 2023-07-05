@@ -83,7 +83,36 @@ tokenHandler._token.get = (requestProperties, callback) => {
 }
 
 tokenHandler._token.put = (requestProperties, callback) => {
+    const id = typeof (requestProperties.body.id) === "string" && requestProperties.body.id.trim().length === 20 ? requestProperties.body.id : false;
+    const extend = typeof (requestProperties.body.extend) === "boolean" && requestProperties.body.extend === true ? true : false;
 
+    if (id && extend) {
+        data.read("Tokens", id, (err, tokenData) => {
+            if (!err && tokenData) {
+                let tokenObject = parseJSON(tokenData);
+                if (tokenObject.expires > Date.now()) {
+                    tokenObject.expires = Date.now() + (60 * 60 * 1000);
+                    data.update("Tokens", id, tokenObject, (err) => {
+                        if (!err) {
+                            callback(200, { message: "token updated successfully" });
+                        } else {
+                            callback(400, { message: "There was an Error!" });
+                        }
+                    });
+                } else {
+                    callback(400, {
+                        error: "Token Already Expired"
+                    });
+                }
+            } else {
+                callback(400, {
+                    error: "Token not matched!"
+                });
+            }
+        });
+    } else {
+        callback(400, { error: "There was an Error!" });
+    }
 }
 
 tokenHandler._token.delete = (requestProperties, callback) => {
