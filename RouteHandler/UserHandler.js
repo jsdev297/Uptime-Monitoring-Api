@@ -7,6 +7,7 @@
 // Dependencies
 const data = require("../lib/data");
 const { hash, parseJSON } = require("../Helpers/Utilities");
+const tokenHandler = require("./TokenHandler");
 
 // Module Scaffolding
 const userHandler = {}
@@ -68,15 +69,32 @@ userHandler._users.post = (requestProperties, callback) => {
 userHandler._users.get = (requestProperties, callback) => {
   const phone = typeof (requestProperties.queryObject.phone) === "string" && requestProperties.queryObject.phone.trim().length === 11 ? requestProperties.queryObject.phone : false;
   if (phone) {
-    data.read("users", phone, (err, user) => {
-      if (!err) {
-        const userCu = JSON.parse(user);
-        delete userCu["password"];
-        callback(200, userCu);
-      } else {
-        callback(500, { message: "Error Established in Database" });
-      }
-    });
+    const token = typeof (requestProperties.headers.token) === "string" ? requestProperties.headers.token : false;
+    if (token) {
+      tokenHandler._token.varifyToken(token, phone, (tokenId) => {
+        if (tokenId) {
+          data.read("users", phone, (err, user) => {
+            if (!err) {
+              const userCu = JSON.parse(user);
+              delete userCu["password"];
+              callback(200, userCu);
+            } else {
+              callback(500, { message: "Error Established in Database" });
+            }
+          });
+        } else {
+          callback(403, {
+            message: "User Authentication Failure!"
+          });
+        }
+      });
+    } else {
+      callback(403, {
+        message: "User Authentication Failure"
+      });
+    }
+
+
   } else {
     callback(404, { message: "request user is not defined" });
   }

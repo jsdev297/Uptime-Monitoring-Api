@@ -149,7 +149,7 @@ tokenHandler._token.delete = (requestProperties, callback) => {
 tokenHandler._token.varifyToken = (id, phone, callback) => {
     data.read("Tokens", id, (err, tokenData) => {
         if (!err && callback) {
-            if (parseJSON(tokenData).phone === phone) {
+            if (parseJSON(tokenData).phone === phone && parseJSON(tokenData).expires > Date.now()) {
                 callback(true);
             }
         } else {
