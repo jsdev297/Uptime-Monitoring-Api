@@ -109,35 +109,53 @@ userHandler._users.put = (requestProperties, callback) => {
 
   if (phone) {
     if (firstName || lastName || password) {
-      data.read("users", phone, (err, user) => {
-        if (!err && user) {
-          user = parseJSON(user);
-          if (firstName) {
-            user.firstName = firstName;
+      const token = typeof (requestProperties.headers.token) === "string" ? requestProperties.headers.token : false;
+      if (token) {
+        tokenHandler._token.varifyToken(token, phone, (tokenId) => {
+          if (tokenId) {
+            data.read("users", phone, (err, user) => {
+              if (!err && user) {
+                user = parseJSON(user);
+                if (firstName) {
+                  user.firstName = firstName;
+                }
+                if (lastName) {
+                  user.lastName = lastName;
+                }
+                if (password) {
+                  user.password = hash(password);
+                }
+                data.update("users", phone, user, (err) => {
+                  if (!err) {
+                    callback(200, {
+                      message: "User Was Updated Successfully"
+                    })
+                  } else {
+                    callback(500, {
+                      error: "There was  a problem"
+                    })
+                  }
+                })
+              } else {
+                callback(400, {
+                  error: "Problem in file reading"
+                });
+              }
+            });
+          } else {
+            callback(403, {
+              message: "Authentication Failure!"
+            });
           }
-          if (lastName) {
-            user.lastName = lastName;
-          }
-          if (password) {
-            user.password = hash(password);
-          }
-          data.update("users", phone, user, (err) => {
-            if (!err) {
-              callback(200, {
-                message: "User Was Updated Successfully"
-              })
-            } else {
-              callback(500, {
-                error: "There was  a problem"
-              })
-            }
-          })
-        } else {
-          callback(400, {
-            error: "Problem in file reading"
-          });
-        }
-      });
+        });
+
+      } else {
+        callback(403, {
+          message: "User need to authenticate before updating system"
+        });
+      }
+
+
     } else {
       callback(400, {
         error: "You have problem in your request"
