@@ -171,27 +171,43 @@ userHandler._users.put = (requestProperties, callback) => {
 // !TODO: User Delete Method (Authentication needed)
 userHandler._users.delete = (requestProperties, callback) => {
   const phone = typeof (requestProperties.queryObject.phone) === "string" && requestProperties.queryObject.phone.trim().length === 11 ? requestProperties.queryObject.phone : false;
-  console.log(typeof (requestProperties.queryObject.phone), requestProperties.queryObject.phone);
   if (phone) {
-    data.read("users", phone, (err, userData) => {
-      if (!err && userData) {
-        data.delete("users", phone, (err) => {
-          if (!err) {
-            callback(200, {
-              message: "User Deleted Successfully"
-            });
-          } else {
-            callback(500, {
-              error: "file deletion failed"
-            });
-          }
-        })
-      } else {
-        callback(400, {
-          error: "User not Found!"
-        })
-      }
-    })
+    const token = typeof (requestProperties.headers.token) === "string" ? requestProperties.headers.token : false;
+    if (token) {
+      tokenHandler._token.varifyToken(token, phone, (tokenId) => {
+        if (tokenId) {
+          data.read("users", phone, (err, userData) => {
+            if (!err && userData) {
+              data.delete("users", phone, (err) => {
+                if (!err) {
+                  callback(200, {
+                    message: "User Deleted Successfully"
+                  });
+                } else {
+                  callback(500, {
+                    error: "file deletion failed"
+                  });
+                }
+              })
+            } else {
+              callback(400, {
+                error: "User not Found!"
+              })
+            }
+          })
+
+        } else {
+          callback(403, {
+            message: "Authencation Failure!"
+          });
+        }
+      });
+    } else {
+      callback(403, {
+        message: "User need to authenticate before deleting!"
+      });
+    }
+
   } else {
     callback(500, {
       message: "Wrong Input"
