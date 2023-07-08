@@ -134,7 +134,72 @@ checkHandler._check.get = (requestProperties, callback) => {
 }
 
 checkHandler._check.put = (requestProperties, callback) => {
+    const id = typeof (requestProperties.body.id) === "string" && requestProperties.body.id.trim().length === 20 ? requestProperties.body.id : false;
+    if (id) {
+        const protocol = typeof (requestProperties.body.protocol) === "string" && ["http", "https"].indexOf(requestProperties.body.protocol) > -1 ? requestProperties.body.protocol : false;
+        const url = typeof (requestProperties.body.url) === "string" && requestProperties.body.url.trim().length > 0 ? requestProperties.body.url : false;
+        const method = typeof (requestProperties.body.method) === "string" && ["GET", "POST", "PUT", "DELETE"].indexOf(requestProperties.body.method) > -1 ? requestProperties.body.method : false;
+        const successCodes = typeof (requestProperties.body.successCodes) === "object" && requestProperties.body.successCodes instanceof Array === true ? requestProperties.body.successCodes : false;
+        const timeOutSeconds = typeof (requestProperties.body.timeOutSeconds) === "number" && requestProperties.body.timeOutSeconds % 2 === 0 && requestProperties.body.timeOutSeconds >= 1 && requestProperties.body.timeOutSeconds <= 5 ? requestProperties.body.timeOutSeconds : false;
 
+        if (protocol || url || method || successCodes || timeOutSeconds) {
+            data.read("Checks", id, (err, checkData) => {
+                if (!err && checkData) {
+                    const checkObject = parseJSON(checkData);
+                    const token = typeof (requestProperties.headers.token) === "string" ? requestProperties.headers.token : false;
+                    if (token) {
+                        tokenHandler._token.varifyToken(token, checkObject.userPhone, (tokenIsValid) => {
+                            if (tokenIsValid) {
+                                if (protocol) {
+                                    checkObject.protocol = protocol;
+                                } if (url) {
+                                    checkObject.url = url;
+                                } if (method) {
+                                    checkObject.method = method;
+                                } if (successCodes) {
+                                    checkObject.successCodes = successCodes;
+                                } if (timeOutSeconds) {
+                                    checkObject.timeOutSeconds = timeOutSeconds;
+                                }
+                                data.update("Checks", id, checkObject, (err) => {
+                                    if (!err) {
+                                        callback(200, {
+                                            message: "Check updated done"
+                                        });
+                                    } else {
+                                        callback(200, {
+                                            message: "There was a server side error"
+                                        });
+                                    }
+                                });
+                            } else {
+                                callback(403, {
+                                    message: "Wrong Token Id"
+                                });
+                            }
+                        });
+                    } else {
+                        callback(500, {
+                            message: "Provide Token id"
+                        });
+                    }
+                } else {
+                    callback(500, {
+                        message: "There was a problem"
+                    });
+                }
+            });
+        } else {
+            callback(500, {
+                message: "There is no field to update"
+            });
+        }
+
+    } else {
+        callback(500, {
+            message: "Please Provide ID"
+        });
+    }
 }
 
 checkHandler._check.delete = (requestProperties, callback) => {
