@@ -12,7 +12,7 @@ const tokenHandler = require("./TokenHandler");
 // Module Scaffolding
 const userHandler = {}
 
-// handler
+// Handler
 userHandler.handle = (requestProperties, callback) => {
   const { method } = requestProperties;
   const acceptedMethods = ["get", "post", "put", "delete"];
