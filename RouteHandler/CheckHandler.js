@@ -99,7 +99,38 @@ checkHandler._check.post = (requestProperties, callback) => {
 }
 
 checkHandler._check.get = (requestProperties, callback) => {
+    const id = typeof (requestProperties.queryObject.id) === "string" && requestProperties.queryObject.id.trim().length === 20 ? requestProperties.queryObject.id : false;
+    if (id) {
+        data.read("Checks", id, (err, checkData) => {
+            if (!err && checkData) {
+                const token = typeof (requestProperties.headers.token) === "string" ? requestProperties.headers.token : false;
+                if (token) {
+                    tokenHandler._token.varifyToken(token, parseJSON(checkData).userPhone, (tokenValid) => {
+                        if (tokenValid) {
+                            callback(200, parseJSON(checkData));
+                        } else {
+                            callback(403, {
+                                message: "Invalid Token!"
+                            });
+                        }
+                    });
+                } else {
+                    callback(500, {
+                        message: "Please Provide Token"
+                    })
+                }
+            } else {
+                callback(500, {
+                    message: "Wrong Id"
+                });
+            }
+        });
 
+    } else {
+        callback(500, {
+            message: "Invalid Check Id"
+        });
+    }
 }
 
 checkHandler._check.put = (requestProperties, callback) => {
