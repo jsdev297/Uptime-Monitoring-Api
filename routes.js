@@ -7,10 +7,12 @@
 // Dependies
 const userHandler = require("./RouteHandler/UserHandler");
 const tokenHandler = require("./RouteHandler/TokenHandler");
+const checkHandler = require("./RouteHandler/CheckHandler");
 
 const routes = {
   token: tokenHandler,
-  user: userHandler
+  user: userHandler,
+  check: checkHandler
 }
 
 module.exports = routes;
