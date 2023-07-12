@@ -33,7 +33,6 @@ checkHandler._check.post = (requestProperties, callback) => {
     const successCodes = typeof (requestProperties.body.successCodes) === "object" && requestProperties.body.successCodes instanceof Array === true ? requestProperties.body.successCodes : false;
     const timeOutSeconds = typeof (requestProperties.body.timeOutSeconds) === "number" && requestProperties.body.timeOutSeconds % 2 === 0 && requestProperties.body.timeOutSeconds >= 1 && requestProperties.body.timeOutSeconds <= 5 ? requestProperties.body.timeOutSeconds : false;
 
-
     if (protocol && url && method && successCodes && timeOutSeconds) {
         const token = typeof (requestProperties.headers.token) === "string" ? requestProperties.headers.token : false;
         data.read("Tokens", token, (err, tokenData) => {
@@ -203,7 +202,76 @@ checkHandler._check.put = (requestProperties, callback) => {
 }
 
 checkHandler._check.delete = (requestProperties, callback) => {
+    const id = typeof (requestProperties.queryObject.id) === "string" && requestProperties.queryObject.id.trim().length === 20 ? requestProperties.queryObject.id : false;
+    if (id) {
+        data.read("Checks", id, (err, checkData) => {
+            if (!err && checkData) {
+                const token = typeof (requestProperties.headers.token) === "string" ? requestProperties.headers.token : false;
+                if (token) {
+                    tokenHandler._token.varifyToken(token, parseJSON(checkData).userPhone, (tokenValid) => {
+                        if (tokenValid) {
+                            data.delete("Checks", id, (err) => {
+                                if (!err) {
+                                    console.log(parseJSON(checkData));
+                                    data.read("users", parseJSON(checkData).phone, (err, userData) => {
+                                        if (!err && userData) {
+                                            let userObject = parseJSON(userData);
+                                            let userChecks = typeof (userObject.checks) === "object" && userObject.checks instanceof Array ? userObject.checks : [];
+                                            const checkPosition = userChecks.indexOf(id);
+                                            if (checkPosition > 0) {
+                                                userChecks.splice(checkPosition, 1);
+                                                userObject.checks = userChecks;
+                                                data.update("users", userObject.phone, userObject, (err) => {
+                                                    if (!err) {
+                                                        callback(200, {
+                                                            message: "Check deleted successfully"
+                                                        });
+                                                    } else {
+                                                        callback(500, {
+                                                            message: "Server Site Error Updating..."
+                                                        });
+                                                    }
+                                                });
+                                            } else {
+                                                callback(500, {
+                                                    message: "The check you want to remove is not available!"
+                                                });
+                                            }
+                                        } else {
+                                            callback(500, {
+                                                message: "Error Established Finding Check!"
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    callback(500, {
+                                        message: "Server Site Error Deleting"
+                                    });
+                                }
+                            });
+                        } else {
+                            callback(403, {
+                                message: "Invalid Token!"
+                            });
+                        }
+                    });
+                } else {
+                    callback(500, {
+                        message: "Please Provide Token"
+                    })
+                }
+            } else {
+                callback(500, {
+                    message: "Wrong Id"
+                });
+            }
+        });
 
+    } else {
+        callback(500, {
+            message: "Invalid Check Id"
+        });
+    }
 }
 
 module.exports = checkHandler;
